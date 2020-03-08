@@ -4,6 +4,9 @@
  */
 import { extend } from 'umi-request';
 import { notification } from 'antd';
+import config from '../../config/defaultSettings';
+import { getToken } from './authority';
+
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
   201: '新建或修改数据成功。',
@@ -28,6 +31,12 @@ const codeMessage = {
 const errorHandler = error => {
   const { response } = error;
 
+  if (response && !response.success && response.error) {
+    notification.error({
+      message: response.error.code,
+      description: response.error.msg,
+    });
+  }
   if (response && response.status) {
     const errorText = codeMessage[response.status] || response.statusText;
     const { status, url } = response;
@@ -41,16 +50,48 @@ const errorHandler = error => {
       message: '网络异常',
     });
   }
+  if (response && response.status === 401) {
+    // eslint-disable-next-line no-underscore-dangle
+    window.g_app._store.dispatch({
+      type: 'login/logout',
+    });
+  }
 
   return response;
 };
+
 /**
  * 配置request请求时的默认参数
  */
-
 const request = extend({
-  errorHandler,
-  // 默认错误处理
   credentials: 'include', // 默认请求是否带上cookie
+  mode: 'cors',
+  prefix: config.baseUrl,
+  errorHandler,
+  headers: {
+    Authorization: getToken(),
+  },
 });
+
+// use middleware, handling request and response
+request.use(async (ctx, next) => {
+  await next();
+  const { res } = ctx;
+  if (res && !res.success && res.error) {
+    // eslint-disable-next-line no-throw-literal
+    throw {
+      response: res,
+    };
+  }
+  return res;
+});
+
+export function refreshToken(token) {
+  request.extendOptions({
+    headers: {
+      Authorization: token || getToken(),
+    },
+  });
+}
+
 export default request;

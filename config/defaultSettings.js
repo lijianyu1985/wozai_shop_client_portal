@@ -14,4 +14,5 @@ export default {
   title: 'Ant Design Pro',
   pwa: false,
   iconfontUrl: '',
+  baseUrl: 'http://localhost:12000',
 };

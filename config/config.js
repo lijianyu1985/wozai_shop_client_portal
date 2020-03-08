@@ -96,35 +96,38 @@ export default {
     {
       path: '/',
       component: '../layouts/SecurityLayout',
+      Routes: ['src/pages/Authorized'],
       routes: [
         {
           path: '/',
           component: '../layouts/BasicLayout',
-          authority: ['admin', 'user'],
+          authority: ['super_admin'],
           routes: [
             {
               path: '/',
               redirect: '/welcome',
+              authority: ['super_admin'],
             },
             {
               path: '/welcome',
               name: 'welcome',
               icon: 'smile',
               component: './Welcome',
+              authority: ['super_admin'],
             },
             {
               path: '/admin',
               name: 'admin',
               icon: 'crown',
               component: './Admin',
-              authority: ['admin'],
+              authority: ['super_admin'],
               routes: [
                 {
                   path: '/admin/sub-page',
                   name: 'sub-page',
                   icon: 'smile',
                   component: './Welcome',
-                  authority: ['admin'],
+                  authority: ['super_admin'],
                 },
               ],
             },
@@ -133,19 +136,23 @@ export default {
               icon: 'table',
               path: '/list',
               component: './ListTableList',
+              authority: ['super_admin'],
             },
             {
               component: './404',
+              authority: ['super_admin'],
             },
           ],
         },
         {
           component: './404',
+          authority: ['super_admin'],
         },
       ],
     },
     {
       component: './404',
+      authority: ['super_admin'],
     },
   ],
   // Theme for antd: https://ant.design/docs/react/customize-theme-cn
