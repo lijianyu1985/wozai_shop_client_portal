@@ -1,129 +1,160 @@
-import { Button, Col, Input, Row, Form, message } from 'antd';
-import React, { useState, useCallback, useEffect } from 'react';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Col, Input, Row } from 'antd';
+import React, { Component } from 'react';
 import omit from 'omit.js';
-import { getFakeCaptcha } from '@/services/login';
 import ItemMap from './map';
 import LoginContext from './LoginContext';
 import styles from './index.less';
+
 const FormItem = Form.Item;
 
-const getFormItemOptions = ({ onChange, defaultValue, customProps = {}, rules }) => {
-  const options = {
-    rules: rules || customProps.rules,
+class WrapFormItem extends Component {
+  static defaultProps = {
+    getCaptchaButtonText: 'captcha',
+    getCaptchaSecondText: 'second',
   };
 
-  if (onChange) {
-    options.onChange = onChange;
+  interval = undefined;
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      count: 0,
+    };
   }
 
-  if (defaultValue) {
-    options.initialValue = defaultValue;
+  componentDidMount() {
+    const { updateActive, name = '' } = this.props;
+
+    if (updateActive) {
+      updateActive(name);
+    }
   }
 
-  return options;
-};
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
 
-const LoginItem = props => {
-  const [count, setCount] = useState(props.countDown || 0);
-  const [timing, setTiming] = useState(false); // 这么写是为了防止restProps中 带入 onChange, defaultValue, rules props tabUtil
-
-  const {
-    onChange,
-    customProps,
-    defaultValue,
-    rules,
-    name,
-    getCaptchaButtonText,
-    getCaptchaSecondText,
-    updateActive,
-    type,
-    tabUtil,
-    ...restProps
-  } = props;
-  const onGetCaptcha = useCallback(async mobile => {
-    const result = await getFakeCaptcha(mobile);
+  onGetCaptcha = () => {
+    const { onGetCaptcha } = this.props;
+    const result = onGetCaptcha ? onGetCaptcha() : null;
 
     if (result === false) {
       return;
     }
 
-    message.success('获取验证码成功！验证码为：1234');
-    setTiming(true);
-  }, []);
-  useEffect(() => {
-    let interval = 0;
-    const { countDown } = props;
+    if (result instanceof Promise) {
+      result.then(this.runGetCaptchaCountDown);
+    } else {
+      this.runGetCaptchaCountDown();
+    }
+  };
 
-    if (timing) {
-      interval = window.setInterval(() => {
-        setCount(preSecond => {
-          if (preSecond <= 1) {
-            setTiming(false);
-            clearInterval(interval); // 重置秒数
+  getFormItemOptions = ({ onChange, defaultValue, customProps = {}, rules }) => {
+    const options = {
+      rules: rules || customProps.rules,
+    };
 
-            return countDown || 60;
-          }
-
-          return preSecond - 1;
-        });
-      }, 1000);
+    if (onChange) {
+      options.onChange = onChange;
     }
 
-    return () => clearInterval(interval);
-  }, [timing]);
+    if (defaultValue) {
+      options.initialValue = defaultValue;
+    }
 
-  if (!name) {
-    return null;
-  } // get getFieldDecorator props
+    return options;
+  };
 
-  const options = getFormItemOptions(props);
-  const otherProps = restProps || {};
+  runGetCaptchaCountDown = () => {
+    const { countDown } = this.props;
+    let count = countDown || 59;
+    this.setState({
+      count,
+    });
+    this.interval = window.setInterval(() => {
+      count -= 1;
+      this.setState({
+        count,
+      });
 
-  if (type === 'Captcha') {
-    const inputProps = omit(otherProps, ['onGetCaptcha', 'countDown']);
-    return (
-      <FormItem shouldUpdate>
-        {({ getFieldValue }) => (
+      if (count === 0) {
+        clearInterval(this.interval);
+      }
+    }, 1000);
+  };
+
+  render() {
+    const { count } = this.state; // 这么写是为了防止restProps中 带入 onChange, defaultValue, rules props tabUtil
+
+    const {
+      onChange,
+      customProps,
+      defaultValue,
+      rules,
+      name,
+      getCaptchaButtonText,
+      getCaptchaSecondText,
+      updateActive,
+      type,
+      form,
+      tabUtil,
+      ...restProps
+    } = this.props;
+
+    if (!name) {
+      return null;
+    }
+
+    if (!form) {
+      return null;
+    }
+
+    const { getFieldDecorator } = form; // get getFieldDecorator props
+
+    const options = this.getFormItemOptions(this.props);
+    const otherProps = restProps || {};
+
+    if (type === 'Captcha') {
+      const inputProps = omit(otherProps, ['onGetCaptcha', 'countDown']);
+      return (
+        <FormItem>
           <Row gutter={8}>
             <Col span={16}>
-              <FormItem name={name} {...options}>
-                <Input {...customProps} {...inputProps} />
-              </FormItem>
+              {getFieldDecorator(name, options)(<Input {...customProps} {...inputProps} />)}
             </Col>
             <Col span={8}>
               <Button
-                disabled={timing}
+                disabled={!!count}
                 className={styles.getCaptcha}
                 size="large"
-                onClick={() => {
-                  const value = getFieldValue('mobile');
-                  onGetCaptcha(value);
-                }}
+                onClick={this.onGetCaptcha}
               >
-                {timing ? `${count} 秒` : '获取验证码'}
+                {count ? `${count} ${getCaptchaSecondText}` : getCaptchaButtonText}
               </Button>
             </Col>
           </Row>
-        )}
+        </FormItem>
+      );
+    }
+
+    return (
+      <FormItem>
+        {getFieldDecorator(name, options)(<Input {...customProps} {...otherProps} />)}
       </FormItem>
     );
   }
+}
 
-  return (
-    <FormItem name={name} {...options}>
-      <Input {...customProps} {...otherProps} />
-    </FormItem>
-  );
-};
-
-const LoginItems = {};
+const LoginItem = {};
 Object.keys(ItemMap).forEach(key => {
   const item = ItemMap[key];
 
-  LoginItems[key] = props => (
+  LoginItem[key] = props => (
     <LoginContext.Consumer>
       {context => (
-        <LoginItem
+        <WrapFormItem
           customProps={item.props}
           rules={item.rules}
           {...props}
@@ -135,4 +166,4 @@ Object.keys(ItemMap).forEach(key => {
     </LoginContext.Consumer>
   );
 });
-export default LoginItems;
+export default LoginItem;

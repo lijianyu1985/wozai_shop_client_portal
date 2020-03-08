@@ -132,11 +132,33 @@ export default {
               ],
             },
             {
-              name: 'list.table-list',
-              icon: 'table',
-              path: '/list',
-              component: './ListTableList',
-              authority: ['super_admin'],
+              path: '/category',
+              name: '产品分类',
+              icon: 'build',
+              authority: ['super_admin', 'product_admin'],
+              routes: [
+                {
+                  path: '/category',
+                  name: '产品分类列表',
+                  redirect: '/category/list',
+                  hideInMenu: true,
+                  authority: ['super_admin', 'product_admin'],
+                },
+                {
+                  path: '/category/list',
+                  name: '产品分类列表',
+                  component: './category/list',
+                  hideInMenu: true,
+                  authority: ['super_admin', 'product_admin'],
+                },
+                {
+                  path: '/category/edit',
+                  name: '产品分类编辑',
+                  component: './category/edit',
+                  hideInMenu: true,
+                  authority: ['super_admin', 'product_admin'],
+                },
+              ],
             },
             {
               component: './404',

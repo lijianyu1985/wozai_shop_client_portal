@@ -37,6 +37,7 @@ const NoticeList = ({
             [styles.read]: item.read,
           }); // eslint-disable-next-line no-nested-ternary
 
+          // eslint-disable-next-line no-nested-ternary
           const leftIcon = item.avatar ? (
             typeof item.avatar === 'string' ? (
               <Avatar className={styles.avatar} src={item.avatar} />

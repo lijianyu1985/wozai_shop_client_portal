@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { Component } from 'react';
 import { Tabs } from 'antd';
 import LoginContext from './LoginContext';
+
 const { TabPane } = Tabs;
 
 const generateId = (() => {
@@ -11,18 +12,27 @@ const generateId = (() => {
   };
 })();
 
-const LoginTab = props => {
-  useEffect(() => {
-    const uniqueId = generateId('login-tab-');
-    const { tabUtil } = props;
+class LoginTab extends Component {
+  uniqueId = '';
+
+  constructor(props) {
+    super(props);
+    this.uniqueId = generateId('login-tab-');
+  }
+
+  componentDidMount() {
+    const { tabUtil } = this.props;
 
     if (tabUtil) {
-      tabUtil.addTab(uniqueId);
+      tabUtil.addTab(this.uniqueId);
     }
-  }, []);
-  const { children } = props;
-  return <TabPane {...props}>{props.active && children}</TabPane>;
-};
+  }
+
+  render() {
+    const { children } = this.props;
+    return <TabPane {...this.props}>{children}</TabPane>;
+  }
+}
 
 const WrapContext = props => (
   <LoginContext.Consumer>
