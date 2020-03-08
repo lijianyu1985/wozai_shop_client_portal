@@ -1,13 +1,19 @@
-import { LockOutlined, MailOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
+import { LockTwoTone, MailTwoTone, MobileTwoTone, UserOutlined } from '@ant-design/icons';
 import React from 'react';
 import styles from './index.less';
-
 export default {
   UserName: {
     props: {
       size: 'large',
       id: 'userName',
-      prefix: <UserOutlined className={styles.prefixIcon} />,
+      prefix: (
+        <UserOutlined
+          style={{
+            color: '#1890ff',
+          }}
+          className={styles.prefixIcon}
+        />
+      ),
       placeholder: 'admin',
     },
     rules: [
@@ -20,7 +26,7 @@ export default {
   Password: {
     props: {
       size: 'large',
-      prefix: <LockOutlined className={styles.prefixIcon} />,
+      prefix: <LockTwoTone className={styles.prefixIcon} />,
       type: 'password',
       id: 'password',
       placeholder: '888888',
@@ -35,7 +41,7 @@ export default {
   Mobile: {
     props: {
       size: 'large',
-      prefix: <MobileOutlined className={styles.prefixIcon} />,
+      prefix: <MobileTwoTone className={styles.prefixIcon} />,
       placeholder: 'mobile number',
     },
     rules: [
@@ -52,7 +58,7 @@ export default {
   Captcha: {
     props: {
       size: 'large',
-      prefix: <MailOutlined className={styles.prefixIcon} />,
+      prefix: <MailTwoTone className={styles.prefixIcon} />,
       placeholder: 'captcha',
     },
     rules: [
