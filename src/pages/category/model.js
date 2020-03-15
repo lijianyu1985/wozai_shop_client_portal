@@ -1,4 +1,4 @@
-import { queryList } from './service';
+import { queryList, create } from './service';
 
 const Model = {
   namespace: 'category',
@@ -13,6 +13,13 @@ const Model = {
           type: 'pageList',
           payload: response || {},
         });
+      }
+    },
+    *create({ payload, callback }, { call }) {
+      const response = yield call(create, payload);
+      if (response && response.success) {
+        // eslint-disable-next-line no-unused-expressions
+        callback && callback(response);
       }
     },
   },

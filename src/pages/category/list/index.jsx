@@ -1,6 +1,6 @@
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import React, { Component } from 'react';
-import { Table, Button, Card } from 'antd';
+import { Table, Button, Card, Divider, Popconfirm } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import { PlusOutlined } from '@ant-design/icons';
@@ -19,7 +19,7 @@ class CategoryList extends Component {
   columns = [
     {
       title: '分类名',
-      dataIndex: 'description',
+      dataIndex: 'name',
       key: 'name',
       render: text => text,
     },
@@ -28,6 +28,27 @@ class CategoryList extends Component {
       dataIndex: 'description',
       key: 'description',
       render: text => text,
+    },
+    {
+      title: '操作',
+      key: 'action',
+      render: (text, record) => (
+        <span>
+          <a
+            key="edit"
+            onClick={e => {
+              e.preventDefault();
+              this.editItem(record);
+            }}
+          >
+            编辑
+          </a>
+          <Divider type="vertical" />
+          <Popconfirm title="是否要删除此行？" onConfirm={() => this.deleteItem(record)}>
+            <a>删除</a>
+          </Popconfirm>
+        </span>
+      ),
     },
   ];
 
@@ -40,7 +61,7 @@ class CategoryList extends Component {
         size: pagination.pageSize || 10,
         page: pagination.current || 1,
         modelName: 'Category',
-        selector: '_id name',
+        selector: '_id name description icon',
       },
     });
   }
@@ -75,7 +96,7 @@ class CategoryList extends Component {
             size: pagination.pageSize || 10,
             page: pagination.current || 1,
             modelName: 'Category',
-            selector: '_id name',
+            selector: '_id name description icon',
           },
         });
       },
@@ -126,7 +147,8 @@ class CategoryList extends Component {
                 columns={this.columns}
                 dataSource={list}
                 pagination={pagination}
-                rowKey={record => record.username}
+                // eslint-disable-next-line no-underscore-dangle
+                rowKey={record => record._id}
                 onChange={this.handleTableChange}
               />
             </Card>
