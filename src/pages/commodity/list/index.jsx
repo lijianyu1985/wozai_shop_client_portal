@@ -4,10 +4,10 @@ import React, { Component } from 'react';
 import { Table, Button, Card, Divider, Popconfirm } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { PlusOutlined, WindowsFilled } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import styles from './index.less';
 
-class CategoryList extends Component {
+class CommodityList extends Component {
   state = {
     pagination: {
       showSizeChanger: true,
@@ -19,21 +19,21 @@ class CategoryList extends Component {
 
   columns = [
     {
-      title: '分类名',
+      title: '商品名',
       dataIndex: 'name',
       key: 'name',
       render: text => text,
     },
     {
-      title: '图标',
-      dataIndex: 'icon',
-      key: 'icon',
+      title: '编码',
+      dataIndex: 'code',
+      key: 'code',
       render: text => text,
     },
     {
-      title: '描述',
-      dataIndex: 'description',
-      key: 'description',
+      title: '品牌',
+      dataIndex: 'brand',
+      key: 'brand',
       render: text => text,
     },
     {
@@ -51,6 +51,16 @@ class CategoryList extends Component {
             编辑
           </a>
           <Divider type="vertical" />
+          <a
+            key="editSku"
+            onClick={e => {
+              e.preventDefault();
+              this.editItemDetails(record);
+            }}
+          >
+            编辑库存
+          </a>
+          <Divider type="vertical" />
           <Popconfirm title="是否要删除此行？" onConfirm={() => this.deleteItem(record)}>
             <a>删除</a>
           </Popconfirm>
@@ -63,33 +73,33 @@ class CategoryList extends Component {
     const { dispatch } = this.props;
     const { pagination } = this.state;
     dispatch({
-      type: 'category/page',
+      type: 'commodity/page',
       payload: {
         size: pagination.pageSize || 10,
         page: pagination.current || 1,
-        modelName: 'Category',
-        selector: '_id name description icon',
+        modelName: 'Commodity',
+        selector: '_id name code brand',
       },
     });
   }
 
   componentDidUpdate() {
     const { pagination } = this.state;
-    if (this.props.category.total !== pagination.total) {
-      pagination.total = this.props.category.total;
+    if (this.props.commodity.total !== pagination.total) {
+      pagination.total = this.props.commodity.total;
       // eslint-disable-next-line react/no-did-update-set-state
       this.setState({ pagination });
     }
   }
 
-  deleteItem = category => {
+  deleteItem = commodity => {
     // eslint-disable-next-line no-console
     const { dispatch } = this.props;
     dispatch({
-      type: 'category/remove',
+      type: 'commodity/remove',
       payload: {
-        modelName: 'Category',
-        ids: [category._id],
+        modelName: 'Commodity',
+        ids: [commodity._id],
       },
       callback: () => {
         this.handleTableChange(this.state.pagination);
@@ -97,11 +107,20 @@ class CategoryList extends Component {
     });
   };
 
-  editItem = category => {
+  editItem = commodity => {
     router.push({
       pathname: 'edit',
       query: {
-        id: category._id,
+        id: commodity._id,
+      },
+    });
+  };
+
+  editItemDetails = commodity => {
+    router.push({
+      pathname: 'editSku',
+      query: {
+        id: commodity._id,
       },
     });
   };
@@ -110,7 +129,7 @@ class CategoryList extends Component {
     // eslint-disable-next-line react/no-access-state-in-setstate
     const pager = { ...this.state.pagination };
     const {
-      category: { total },
+      commodity: { total },
       dispatch,
     } = this.props;
     pager.current = pagination.current;
@@ -122,12 +141,12 @@ class CategoryList extends Component {
       },
       () => {
         dispatch({
-          type: 'category/page',
+          type: 'commodity/page',
           payload: {
             size: pagination.pageSize || 10,
             page: pagination.current || 1,
-            modelName: 'Category',
-            selector: '_id name description icon',
+            modelName: 'Commodity',
+            selector: '_id name code brand',
           },
         });
       },
@@ -136,7 +155,7 @@ class CategoryList extends Component {
 
   render() {
     const {
-      category: { list },
+      commodity: { list },
       loading,
     } = this.props;
     const { pagination } = this.state;
@@ -190,7 +209,7 @@ class CategoryList extends Component {
   }
 }
 
-export default connect(({ category, loading }) => ({
-  category,
-  loading: loading.models.category,
-}))(CategoryList);
+export default connect(({ commodity, loading }) => ({
+  commodity,
+  loading: loading.models.commodity,
+}))(CommodityList);

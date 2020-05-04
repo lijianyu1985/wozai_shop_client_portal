@@ -6,6 +6,12 @@ export async function queryList(params) {
   });
 }
 
+export async function all(params) {
+  return request('/Common/All', {
+    params,
+  });
+}
+
 export async function create(params) {
   return request('/Common/Create', {
     method: 'POST',

@@ -1,5 +1,7 @@
 import { parse } from 'querystring';
 import pathRegexp from 'path-to-regexp';
+import lodash from 'lodash';
+import config from '../../config/defaultSettings';
 
 /* eslint no-useless-escape:0 import/prefer-default-export:0 */
 const reg = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
@@ -57,3 +59,26 @@ export const getRouteAuthority = (path, routeData) => {
   });
   return authorities;
 };
+
+export const buildPictureUrl = url => {
+  let pictureUrl = encodeURI(url);
+  if (!lodash.startsWith(pictureUrl, 'http://') && !lodash.startsWith(pictureUrl, 'https://')) {
+    pictureUrl = `${lodash.trimEnd(config.baseUrl, '/')}/${lodash.trimStart(pictureUrl, '/')}`;
+  }
+  return pictureUrl;
+};
+
+export const trimBaseUrl = url => {
+  let pictureUrl = decodeURI(url);
+  if (lodash.startsWith(pictureUrl, 'http://') || lodash.startsWith(pictureUrl, 'https://')) {
+    pictureUrl = lodash.trimStart(pictureUrl, `${lodash.trimEnd(config.baseUrl, '/')}/}`);
+  }
+  return pictureUrl;
+};
+
+export const getBase64 = file => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = error => reject(error);
+})
