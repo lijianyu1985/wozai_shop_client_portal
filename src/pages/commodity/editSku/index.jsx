@@ -7,6 +7,7 @@ import router from 'umi/router';
 import lodash from 'lodash';
 import styles from './index.less';
 import SkuEditor from '../../../components/Sku/editor';
+import { commodityStatusMap } from '../../../utils/const';
 
 class CommodityEdit extends Component {
   updatedSkus = [];
@@ -126,6 +127,7 @@ class CommodityEdit extends Component {
         );
       });
     }
+    const isFormDisabled = commodityStatusMap.preOnline !== skusCommodity.status;
 
     return (
       <PageHeaderWrapper content="" className={styles.main}>
@@ -163,6 +165,7 @@ class CommodityEdit extends Component {
           <Card bordered={false}>
             <Card bordered={false}>
               <Button
+              disabled={isFormDisabled}
                 style={{
                   float: 'right',
                 }}
@@ -174,6 +177,7 @@ class CommodityEdit extends Component {
             </Card>
             {filteredSkus && filteredSkus.length && (
               <SkuEditor
+              disabled={isFormDisabled}
                 ref={skuEditor => {
                   this.skuEditor = skuEditor;
                 }}

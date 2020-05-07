@@ -37,6 +37,12 @@ class CommodityList extends Component {
       render: text => text,
     },
     {
+      title: '状态',
+      dataIndex: 'status',
+      key: 'status',
+      render: text => text,
+    },
+    {
       title: '操作',
       key: 'action',
       render: (text, record) => (
@@ -48,7 +54,7 @@ class CommodityList extends Component {
               this.editItem(record);
             }}
           >
-            编辑
+            基本信息
           </a>
           <Divider type="vertical" />
           <a
@@ -58,7 +64,7 @@ class CommodityList extends Component {
               this.editItemDetails(record);
             }}
           >
-            编辑库存
+            库存
           </a>
           <Divider type="vertical" />
           <Popconfirm title="是否要删除此行？" onConfirm={() => this.deleteItem(record)}>
@@ -78,7 +84,7 @@ class CommodityList extends Component {
         size: pagination.pageSize || 10,
         page: pagination.current || 1,
         modelName: 'Commodity',
-        selector: '_id name code brand',
+        selector: '_id name code brand status',
       },
     });
   }

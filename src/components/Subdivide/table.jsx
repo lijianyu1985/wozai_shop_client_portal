@@ -11,6 +11,7 @@ const EditableCell = ({
   record,
   index,
   children,
+  disabled,
   ...restProps
 }) => {
   const inputNode =
@@ -51,7 +52,7 @@ const EditableCell = ({
   );
 };
 
-const EditableTable = ({ value, onChange }) => {
+const EditableTable = ({ value, onChange, disabled }) => {
   const [form] = Form.useForm();
   const [data, setData] = useState((value || []).map((v, key) => ({ ...v, key })));
   const [editingKey, setEditingKey] = useState('');
@@ -134,7 +135,7 @@ const EditableTable = ({ value, onChange }) => {
       dataIndex: 'operation',
       render: (_, record) => {
         const editable = isEditing(record);
-        return editable ? (
+        return editable && !disabled ? (
           <span>
             <a
               onClick={() => save(record.key)}
@@ -155,12 +156,12 @@ const EditableTable = ({ value, onChange }) => {
           </span>
         ) : (
           <span>
-            <a disabled={editingKey !== ''} onClick={() => edit(record)}>
+            <a disabled={editingKey !== '' || disabled} onClick={() => edit(record)}>
               编辑
             </a>
             <Divider />
             <Popconfirm title="确认删除?" onConfirm={() => handleDelete(record.key)}>
-              <a disabled={editingKey !== ''}>Delete</a>
+              <a disabled={editingKey !== '' || disabled}>删除</a>
             </Popconfirm>
           </span>
         );
@@ -179,12 +180,15 @@ const EditableTable = ({ value, onChange }) => {
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditing(record),
+        disabled,
       }),
     };
   });
   return (
     <div>
       <Button
+      
+      disabled={disabled}
         onClick={handleAdd}
         type="primary"
         style={{

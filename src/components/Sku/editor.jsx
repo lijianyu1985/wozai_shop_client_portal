@@ -9,6 +9,7 @@ const EditableCell = ({
   dataIndex,
   record,
   handleSave,
+  disabled,
   ...restProps
 }) => {
   const save = async e => {
@@ -28,6 +29,7 @@ const EditableCell = ({
   if (editable) {
     childNode = (
       <InputNumber
+        disabled={disabled}
         value={(record && record[dataIndex]) || 0}
         precision={dataIndex === 'price' ? 2 : 0}
         onBlur={save}
@@ -98,6 +100,7 @@ class EditableTable extends React.Component {
           editable: col.editable,
           dataIndex: col.dataIndex,
           title: col.title,
+          disabled: this.props.disabled,
           handleSave: this.handleSave,
         }),
       };

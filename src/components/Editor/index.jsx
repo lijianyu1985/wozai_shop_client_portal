@@ -48,6 +48,7 @@ class EditorConvertToHTML extends Component {
     // 同时在将 EditorState 传入渲染使用
     onChange: PropTypes.func,
     value: PropTypes.string,
+    disabled: PropTypes.bool,
   };
 
   constructor(props) {
@@ -84,12 +85,15 @@ class EditorConvertToHTML extends Component {
 
     return (
       <Editor
+        disabled={this.props.disabled}
+        readOnly={this.props.disabled}
         localization={{ locale: 'zh' }}
         wrapperClassName="demo-wrapper"
         editorClassName="demo-editor"
         editorState={editorState}
         onEditorStateChange={this.onEditorStateChange}
         toolbar={{
+          disabled: this.props.disabled,
           image: {
             uploadCallback: uploadImageCallBack,
             alt: { present: true, mandatory: true },

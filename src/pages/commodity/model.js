@@ -1,6 +1,6 @@
 import modelFactory from '../../utils/modelFactory';
 import { all } from '../../services/common';
-import { create, change, getSkus, changeSkus } from './service';
+import { create, change, getSkus, changeSkus, publish, withdraw, discard } from './service';
 
 const Model = modelFactory({
     namespace: 'commodity',
@@ -54,6 +54,27 @@ const Model = modelFactory({
         },
         *changeSkus({ payload, callback }, { call }) {
             const response = yield call(changeSkus, payload);
+            if (response && response.success) {
+                // eslint-disable-next-line no-unused-expressions
+                callback && callback(response);
+            }
+        },
+        *publish({ payload, callback }, { call }) {
+            const response = yield call(publish, payload);
+            if (response && response.success) {
+                // eslint-disable-next-line no-unused-expressions
+                callback && callback(response);
+            }
+        },
+        *withdraw({ payload, callback }, { call }) {
+            const response = yield call(withdraw, payload);
+            if (response && response.success) {
+                // eslint-disable-next-line no-unused-expressions
+                callback && callback(response);
+            }
+        },
+        *discard({ payload, callback }, { call }) {
+            const response = yield call(discard, payload);
             if (response && response.success) {
                 // eslint-disable-next-line no-unused-expressions
                 callback && callback(response);

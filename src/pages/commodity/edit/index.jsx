@@ -2,13 +2,25 @@
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { PlusOutlined } from '@ant-design/icons';
 import React, { Component } from 'react';
-import { Form, Input, Button, notification, Card, Spin, Select, Upload, Modal } from 'antd';
+import {
+  Form,
+  Input,
+  Button,
+  notification,
+  Card,
+  Spin,
+  Select,
+  Upload,
+  Modal,
+  Popconfirm,
+} from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import lodash from 'lodash';
 import styles from './index.less';
 import config from '../../../../config/defaultSettings';
 import { getBase64, buildPictureUrl, trimBaseUrl } from '../../../utils/utils';
+import { commodityStatusMap } from '../../../utils/const';
 import Editor from '../../../components/Editor';
 import SubdivideEditor from '../../../components/Subdivide/table';
 
@@ -58,7 +70,8 @@ class CommodityEdit extends Component {
         payload: {
           modelName: 'Commodity',
           id: this.props.location.query.id,
-          selector: '_id name code brand categoryId photos coverPhotos description subdivide',
+          selector:
+            '_id name code brand categoryId photos coverPhotos description subdivide status',
         },
         callback: response => {
           const photos = (response && response.data && response.data.photos) || [];
@@ -96,11 +109,12 @@ class CommodityEdit extends Component {
     const coverPhotos = (coverList || []).map(
       i => i && ((i.response && i.response.filePath) || trimBaseUrl(i.url)),
     );
+    const { status, ...postValues } = values;
     if (!editing) {
       dispatch({
         type: 'commodity/create',
         payload: {
-          ...values,
+          ...postValues,
           photos,
           coverPhotos,
         },
@@ -114,7 +128,7 @@ class CommodityEdit extends Component {
       dispatch({
         type: 'commodity/change',
         payload: {
-          ...values,
+          ...postValues,
           photos,
           coverPhotos,
           id: commodityId,
@@ -159,6 +173,48 @@ class CommodityEdit extends Component {
     }
   };
 
+  publish = () => {
+    const { dispatch } = this.props;
+    const { commodityId } = this.state;
+    dispatch({
+      type: 'commodity/publish',
+      payload: {
+        id: commodityId,
+      },
+      callback: () => {
+        location.reload();
+      },
+    });
+  };
+
+  withdraw = () => {
+    const { dispatch } = this.props;
+    const { commodityId } = this.state;
+    dispatch({
+      type: 'commodity/withdraw',
+      payload: {
+        id: commodityId,
+      },
+      callback: () => {
+        location.reload();
+      },
+    });
+  };
+
+  discard = () => {
+    const { dispatch } = this.props;
+    const { commodityId } = this.state;
+    dispatch({
+      type: 'commodity/discard',
+      payload: {
+        id: commodityId,
+      },
+      callback: () => {
+        location.reload();
+      },
+    });
+  };
+
   render() {
     const formItemLayout = {
       labelCol: {
@@ -201,23 +257,62 @@ class CommodityEdit extends Component {
     } = this.props;
 
     const { editing, previewVisible, previewImage, fileList, coverList } = this.state;
-
+    const isFormDisabled = commodityStatusMap.preOnline !== current.status;
     return (
       <PageHeaderWrapper content="" className={styles.main}>
         <Spin spinning={loading} size="large">
-          <Button
-            onClick={() =>
-              router.push({
-                pathname: 'list',
-              })
-            }
-          >
-            返回
-          </Button>
           <Card bordered={false}>
-            <Form ref={this.formRef} initialValues={current} onFinish={this.handleSubmit}>
+            <Button
+              style={{
+                float: 'left',
+              }}
+              onClick={() =>
+                router.push({
+                  pathname: 'list',
+                })
+              }
+            >
+              返回
+            </Button>
+            <div
+              style={{
+                float: 'right',
+              }}
+            >
+              {commodityStatusMap.preOnline === current.status && (
+                <Popconfirm title="确定要上线吗？" onConfirm={this.publish}>
+                  <Button style={{ marginRight: 10 }} type="primary">
+                    上线
+                  </Button>
+                </Popconfirm>
+              )}
+              {commodityStatusMap.online === current.status && (
+                <Popconfirm title="确定要下线吗？" onConfirm={this.withdraw}>
+                  <Button style={{ marginRight: 10 }} type="primary">
+                    下线
+                  </Button>
+                </Popconfirm>
+              )}
+              {commodityStatusMap.preOnline === current.status && (
+                <Popconfirm title="确定要废除吗？" onConfirm={this.discard}>
+                  <Button danger style={{ marginRight: 10 }} type="primary" >
+                    废除
+                  </Button>
+                </Popconfirm>
+              )}
+            </div>
+          </Card>
+          <Card bordered={false}>
+            <Form
+              ref={this.formRef}
+              initialValues={current}
+              onFinish={this.handleSubmit}
+            >
               <Form.Item name="code" label="编码" {...formItemLayout} rules={[]}>
                 <Input disabled={editing} />
+              </Form.Item>
+              <Form.Item name="status" label="状态" {...formItemLayout} rules={[]}>
+                <Input disabled />
               </Form.Item>
               <Form.Item
                 name="name"
@@ -230,7 +325,7 @@ class CommodityEdit extends Component {
                   },
                 ]}
               >
-                <Input />
+                <Input disabled={isFormDisabled}/>
               </Form.Item>
               <Form.Item
                 name="brand"
@@ -243,7 +338,7 @@ class CommodityEdit extends Component {
                   },
                 ]}
               >
-                <Input />
+                <Input disabled={isFormDisabled}/>
               </Form.Item>
               <Form.Item
                 name="categoryId"
@@ -256,7 +351,7 @@ class CommodityEdit extends Component {
                   },
                 ]}
               >
-                <Select placeholder="请选择分类">
+                <Select disabled={isFormDisabled} placeholder="请选择分类">
                   {(allCategories || []).map(item => (
                     <Select.Option key={item._id} value={item._id}>
                       {item.name}
@@ -276,6 +371,7 @@ class CommodityEdit extends Component {
                 ]}
               >
                 <Upload
+                disabled={isFormDisabled}
                   showUploadList={{
                     showRemoveIcon: false,
                   }}
@@ -305,6 +401,7 @@ class CommodityEdit extends Component {
                 ]}
               >
                 <Upload
+                disabled={isFormDisabled}
                   accept="image/*"
                   action={`${config.baseUrl}/Images`}
                   listType="picture-card"
@@ -347,7 +444,7 @@ class CommodityEdit extends Component {
                   },
                 ]}
               >
-                <SubdivideEditor />
+                <SubdivideEditor disabled={isFormDisabled}/>
               </Form.Item>
               <Form.Item
                 name="description"
@@ -360,7 +457,7 @@ class CommodityEdit extends Component {
                   },
                 ]}
               >
-                <Editor />
+                <Editor disabled={isFormDisabled}/>
               </Form.Item>
               <Form.Item
                 {...submitFormLayout}
@@ -369,7 +466,7 @@ class CommodityEdit extends Component {
                   offset: 6,
                 }}
               >
-                <Button type="primary" htmlType="submit">
+                <Button disabled={isFormDisabled} type="primary" htmlType="submit">
                   保存
                 </Button>
               </Form.Item>
