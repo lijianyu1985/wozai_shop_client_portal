@@ -255,9 +255,10 @@ class CommodityEdit extends Component {
       commodity: { current, allCategories },
       loading,
     } = this.props;
+    const {commodityId} =this.state;
 
     const { editing, previewVisible, previewImage, fileList, coverList } = this.state;
-    const isFormDisabled = commodityStatusMap.preOnline !== current.status;
+    const isFormDisabled = commodityStatusMap.preOnline !== current.status && commodityId;
     return (
       <PageHeaderWrapper content="" className={styles.main}>
         <Spin spinning={loading} size="large">
