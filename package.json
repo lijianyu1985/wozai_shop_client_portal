@@ -29,7 +29,9 @@
     "test:all": "node ./tests/run-tests.js",
     "test:component": "umi test ./src/components",
     "tsc": "tsc",
-    "ui": "umi ui"
+    "ui": "umi ui",
+    "copy": "copyfiles -f ./dist/*.* ./docker/web/dist/",
+    "docker": "npm run build && npm run copy && docker-compose -f docker-compose.yml up -d --build"
   },
   "husky": {
     "hooks": {

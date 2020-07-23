@@ -1,0 +1,20 @@
+version: '3.2'
+
+services:
+  web:
+    image: wozai_web
+    container_name: wozai_web
+    networks:
+      backend:
+        aliases:
+          - wozai_web
+    restart: always
+    ports:
+      - 7780:80
+    build:
+      context: ./docker/web/
+      dockerfile: Dockerfile
+
+networks:
+  backend:
+    driver: bridge
