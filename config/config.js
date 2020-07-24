@@ -101,19 +101,19 @@ export default {
         {
           path: '/',
           component: '../layouts/BasicLayout',
-          authority: ['super_admin'],
+          authority: ['super_admin', 'product_admin'],
           routes: [
             {
               path: '/',
               redirect: '/welcome',
-              authority: ['super_admin'],
+              authority: ['super_admin', 'product_admin'],
             },
             {
               path: '/welcome',
               name: '欢迎',
               icon: 'smile',
               component: './Welcome',
-              authority: ['super_admin'],
+              authority: ['super_admin', 'product_admin'],
             },
             {
               path: '/product',
@@ -190,19 +190,19 @@ export default {
             },
             {
               component: './404',
-              authority: ['super_admin'],
+              authority: ['super_admin', 'product_admin'],
             },
           ],
         },
         {
           component: './404',
-          authority: ['super_admin'],
+          authority: ['super_admin', 'product_admin'],
         },
       ],
     },
     {
       component: './404',
-      authority: ['super_admin'],
+      authority: ['super_admin', 'product_admin'],
     },
   ],
   // Theme for antd: https://ant.design/docs/react/customize-theme-cn
