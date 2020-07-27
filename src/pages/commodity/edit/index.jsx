@@ -21,7 +21,7 @@ import styles from './index.less';
 import config from '../../../../config/defaultSettings';
 import { getBase64, buildPictureUrl, trimBaseUrl } from '../../../utils/utils';
 import { commodityStatusMap } from '../../../utils/const';
-import Editor from '../../../components/Editor';
+import BraftEditor from '../../../components/BraftEditor';
 import SubdivideEditor from '../../../components/Subdivide/table';
 
 function beforeUpload(file) {
@@ -258,7 +258,7 @@ class CommodityEdit extends Component {
     const {commodityId} =this.state;
 
     const { editing, previewVisible, previewImage, fileList, coverList } = this.state;
-    const isFormDisabled = commodityStatusMap.preOnline !== current.status && commodityId;
+    const isFormDisabled = !!(commodityStatusMap.preOnline !== current.status && commodityId);
     return (
       <PageHeaderWrapper content="" className={styles.main}>
         <Spin spinning={loading} size="large">
@@ -458,7 +458,7 @@ class CommodityEdit extends Component {
                   },
                 ]}
               >
-                <Editor disabled={isFormDisabled}/>
+                <BraftEditor disabled={isFormDisabled}/>
               </Form.Item>
               <Form.Item
                 {...submitFormLayout}
