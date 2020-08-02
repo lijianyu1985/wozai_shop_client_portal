@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 /* eslint-disable no-underscore-dangle */
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { PlusOutlined } from '@ant-design/icons';
@@ -146,6 +147,7 @@ class CommodityEdit extends Component {
 
   handlePreview = async file => {
     if (!file.url && !file.preview) {
+      // eslint-disable-next-line no-param-reassign
       file.preview = await getBase64(file.originFileObj);
     }
 
@@ -255,7 +257,7 @@ class CommodityEdit extends Component {
       commodity: { current, allCategories },
       loading,
     } = this.props;
-    const {commodityId} =this.state;
+    const { commodityId } = this.state;
 
     const { editing, previewVisible, previewImage, fileList, coverList } = this.state;
     const isFormDisabled = !!(commodityStatusMap.preOnline !== current.status && commodityId);
@@ -296,7 +298,7 @@ class CommodityEdit extends Component {
               )}
               {commodityStatusMap.preOnline === current.status && (
                 <Popconfirm title="确定要废除吗？" onConfirm={this.discard}>
-                  <Button danger style={{ marginRight: 10 }} type="primary" >
+                  <Button danger style={{ marginRight: 10 }} type="primary">
                     废除
                   </Button>
                 </Popconfirm>
@@ -304,11 +306,7 @@ class CommodityEdit extends Component {
             </div>
           </Card>
           <Card bordered={false}>
-            <Form
-              ref={this.formRef}
-              initialValues={current}
-              onFinish={this.handleSubmit}
-            >
+            <Form ref={this.formRef} initialValues={current} onFinish={this.handleSubmit}>
               <Form.Item name="code" label="编码" {...formItemLayout} rules={[]}>
                 <Input disabled={editing} />
               </Form.Item>
@@ -326,7 +324,7 @@ class CommodityEdit extends Component {
                   },
                 ]}
               >
-                <Input disabled={isFormDisabled}/>
+                <Input disabled={isFormDisabled} />
               </Form.Item>
               <Form.Item
                 name="brand"
@@ -339,7 +337,7 @@ class CommodityEdit extends Component {
                   },
                 ]}
               >
-                <Input disabled={isFormDisabled}/>
+                <Input disabled={isFormDisabled} />
               </Form.Item>
               <Form.Item
                 name="categoryId"
@@ -372,7 +370,7 @@ class CommodityEdit extends Component {
                 ]}
               >
                 <Upload
-                disabled={isFormDisabled}
+                  disabled={isFormDisabled}
                   showUploadList={{
                     showRemoveIcon: false,
                   }}
@@ -402,7 +400,7 @@ class CommodityEdit extends Component {
                 ]}
               >
                 <Upload
-                disabled={isFormDisabled}
+                  disabled={isFormDisabled}
                   accept="image/*"
                   action={`${config.baseUrl}/Images`}
                   listType="picture-card"
@@ -445,7 +443,7 @@ class CommodityEdit extends Component {
                   },
                 ]}
               >
-                <SubdivideEditor disabled={isFormDisabled}/>
+                <SubdivideEditor disabled={isFormDisabled} />
               </Form.Item>
               <Form.Item
                 name="description"
@@ -458,7 +456,7 @@ class CommodityEdit extends Component {
                   },
                 ]}
               >
-                <BraftEditor disabled={isFormDisabled}/>
+                <BraftEditor disabled={isFormDisabled} />
               </Form.Item>
               <Form.Item
                 {...submitFormLayout}
