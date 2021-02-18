@@ -14,5 +14,5 @@ export default {
   title: 'Ant Design Pro',
   pwa: false,
   iconfontUrl: '',
-  baseUrl: 'http://39.107.102.219:7171',
+  baseUrl: 'http://192.168.124.4:12000',
 };

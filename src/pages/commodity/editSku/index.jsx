@@ -59,7 +59,7 @@ class CommodityEdit extends Component {
 
   updateSku = (_id, dataIndex, value) => {
     const existingSku = this.updatedSkus.find(s => s._id === _id);
-    const {skus} = this.state;
+    const { skus } = this.state;
     if (existingSku) {
       existingSku[dataIndex] = value;
     } else {
@@ -71,9 +71,9 @@ class CommodityEdit extends Component {
     const existingStateSku = skus.find(s => s._id === _id);
     if (existingStateSku) {
       existingStateSku[dataIndex] = value;
-    } 
+    }
     this.setState({
-      skus
+      skus,
     });
   };
 
@@ -104,9 +104,10 @@ class CommodityEdit extends Component {
   };
 
   filterSkus = (sub, e) => {
+    const { skuFilters } = this.state;
     this.setState({
       skuFilters: {
-        ...this.state.skuFilters,
+        ...skuFilters,
         [sub.kind]: e.target.value,
       },
     });
@@ -151,7 +152,7 @@ class CommodityEdit extends Component {
                     style={{ paddingBottom: 20, width: '100%', whiteSpace: 'break-spaces' }}
                     onChange={val => this.filterSkus(sub, val)}
                   >
-                    <Radio.Button value=''>空</Radio.Button>
+                    <Radio.Button value="">空</Radio.Button>
                     {sub.valueList.map(v => (
                       <Radio.Button key={v} value={v}>
                         {v}
@@ -165,7 +166,7 @@ class CommodityEdit extends Component {
           <Card bordered={false}>
             <Card bordered={false}>
               <Button
-              disabled={isFormDisabled}
+                disabled={isFormDisabled}
                 style={{
                   float: 'right',
                 }}
@@ -177,7 +178,7 @@ class CommodityEdit extends Component {
             </Card>
             {filteredSkus && filteredSkus.length && (
               <SkuEditor
-              disabled={isFormDisabled}
+                disabled={isFormDisabled}
                 ref={skuEditor => {
                   this.skuEditor = skuEditor;
                 }}

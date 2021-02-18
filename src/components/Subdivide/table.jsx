@@ -187,8 +187,7 @@ const EditableTable = ({ value, onChange, disabled }) => {
   return (
     <div>
       <Button
-      
-      disabled={disabled}
+        disabled={disabled}
         onClick={handleAdd}
         type="primary"
         style={{

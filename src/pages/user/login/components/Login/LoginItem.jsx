@@ -5,6 +5,7 @@ import { getFakeCaptcha } from '@/services/login';
 import ItemMap from './map';
 import LoginContext from './LoginContext';
 import styles from './index.less';
+
 const FormItem = Form.Item;
 
 const getFormItemOptions = ({ onChange, defaultValue, customProps = {}, rules }) => {

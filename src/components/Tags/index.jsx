@@ -33,10 +33,15 @@ class EditableTagGroup extends React.Component {
   };
 
   handleClose = removedTag => {
-    const tags = this.state.tags.filter(tag => tag !== removedTag);
+    let { tags } = this.state;
+    tags = tags.filter(tag => tag !== removedTag);
     this.setState({ tags });
-    this.props.onBlur && this.props.onBlur(tags);
-    this.props.onChange && this.props.onChange(tags);
+    if (this.props.onBlur) {
+      this.props.onBlur(tags);
+    }
+    if (this.props.onChange) {
+      this.props.onChange(tags);
+    }
   };
 
   handleInputChange = e => {
@@ -58,8 +63,12 @@ class EditableTagGroup extends React.Component {
         inputVisible: false,
       });
     }
-    this.props.onBlur && this.props.onBlur(tags);
-    this.props.onChange && this.props.onChange(tags);
+    if (this.props.onBlur) {
+      this.props.onBlur(tags);
+    }
+    if (this.props.onChange) {
+      this.props.onChange(tags);
+    }
   };
 
   // eslint-disable-next-line no-return-assign
@@ -127,7 +136,8 @@ class EditableTagGroup extends React.Component {
         )}
         {!inputVisible && (
           <Tag onClick={this.showInput} className="site-tag-plus">
-            <PlusOutlined />添加
+            <PlusOutlined />
+            添加
           </Tag>
         )}
       </div>

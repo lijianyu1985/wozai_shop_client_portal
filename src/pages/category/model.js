@@ -4,8 +4,7 @@ const Model = {
   namespace: 'category',
   state: {
     list: [],
-    current: {
-    }
+    current: {},
   },
   effects: {
     *page({ payload }, { call, put }) {
@@ -21,7 +20,9 @@ const Model = {
       const response = yield call(create, payload);
       if (response && response.success) {
         // eslint-disable-next-line no-unused-expressions
-        callback && callback(response);
+        if (callback) {
+          callback(response);
+        }
         yield put({
           type: 'currentCategory',
           payload: {},
@@ -32,7 +33,9 @@ const Model = {
       const response = yield call(change, payload);
       if (response && response.success) {
         // eslint-disable-next-line no-unused-expressions
-        callback && callback(response);
+        if (callback) {
+          callback(response);
+        }
         yield put({
           type: 'currentCategory',
           payload: {},
@@ -43,7 +46,9 @@ const Model = {
       const response = yield call(remove, payload);
       if (response && response.success) {
         // eslint-disable-next-line no-unused-expressions
-        callback && callback(response);
+        if (callback) {
+          callback(response);
+        }
       }
     },
     *get({ payload }, { call, put }) {

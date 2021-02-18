@@ -29,6 +29,7 @@ const myUploadFn = param => {
     const responseObj = JSON.parse(xhr.responseText);
     param.success({
       url: buildPictureUrl(responseObj.filePath),
+      width: '100%',
     });
   };
 
@@ -63,7 +64,11 @@ const myValidateFn = file => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       // eslint-disable-next-line no-unused-expressions
-      file.size < 1024 * 1024 * maxSize ? resolve() : reject();
+      if (file.size < 1024 * 1024 * maxSize) {
+        resolve();
+      } else {
+        reject();
+      }
     }, 2000);
   });
 };
