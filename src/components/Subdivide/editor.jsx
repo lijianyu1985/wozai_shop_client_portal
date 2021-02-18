@@ -15,7 +15,7 @@ const data = [
 class SubdivideEditor extends Component {
   static propTypes = {
     // 同时在将 EditorState 传入渲染使用
-    onChange: PropTypes.func,
+    // onChange: PropTypes.func,
     value: PropTypes.arrayOf(PropTypes.object),
   };
 
@@ -37,7 +37,8 @@ class SubdivideEditor extends Component {
   }
 
   handleClose = removedTag => {
-    const tags = this.state.tags.filter(tag => tag !== removedTag);
+    let { tags } = this.state;
+    tags = tags.filter(tag => tag !== removedTag);
     console.log(tags);
     this.setState({ tags });
   };
@@ -56,7 +57,6 @@ class SubdivideEditor extends Component {
     if (inputValue && tags.indexOf(inputValue) === -1) {
       tags = [...tags, inputValue];
     }
-    console.log(tags);
     this.setState({
       tags,
       inputVisible: false,
@@ -64,7 +64,9 @@ class SubdivideEditor extends Component {
     });
   };
 
-  saveInputRef = input => (this.input = input);
+  saveInputRef = input => {
+    this.input = input;
+  };
 
   forMap = tag => {
     const tagElem = (

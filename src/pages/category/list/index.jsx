@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { Table, Button, Card, Divider, Popconfirm } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { PlusOutlined, WindowsFilled } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import styles from './index.less';
 
 class CategoryList extends Component {

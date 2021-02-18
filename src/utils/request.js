@@ -79,9 +79,9 @@ request.use(async (ctx, next) => {
   const { res } = ctx;
   if (res && !res.success && res.error) {
     // eslint-disable-next-line no-throw-literal
-    throw {
+    throw new Error({
       response: res,
-    };
+    });
   }
   return res;
 });

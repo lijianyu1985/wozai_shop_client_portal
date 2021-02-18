@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import React, { useState } from 'react';
+import React from 'react';
 import { Table, InputNumber } from 'antd';
 
 const EditableCell = ({
@@ -73,7 +73,9 @@ class EditableTable extends React.Component {
 
   handleSave = (row, dataIndex, data) => {
     // eslint-disable-next-line no-unused-expressions
-    this.props.updateSku && this.props.updateSku(row._id, dataIndex, data);
+    if (this.props.updateSku) {
+      this.props.updateSku(row._id, dataIndex, data);
+    }
   };
 
   render() {
