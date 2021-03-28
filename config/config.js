@@ -189,6 +189,29 @@ export default {
               ],
             },
             {
+              path: '/order',
+              name: '订单',
+              icon: 'crown',
+              authority: ['super_admin'],
+              routes: [
+                {
+                  path: '/order/list',
+                  name: '订单列表',
+                  icon: 'build',
+                  authority: ['super_admin'],
+                  routes: [
+                    {
+                      path: '/order/list',
+                      name: '订单列表',
+                      component: './order/list',
+                      hideInMenu: true,
+                      authority: ['super_admin'],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
               component: './404',
               authority: ['super_admin', 'product_admin'],
             },

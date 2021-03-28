@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import React from 'react';
-import { Table, InputNumber } from 'antd';
+import { Table, Checkbox, InputNumber } from 'antd';
 
 const EditableCell = ({
   title,
@@ -14,11 +14,15 @@ const EditableCell = ({
 }) => {
   const save = async e => {
     try {
-      let parser = parseInt;
-      if (dataIndex === 'price') {
-        parser = parseFloat;
+      if (dataIndex === 'archived') {
+        handleSave(record, dataIndex, e.target.checked);
+      } else {
+        let parser = parseInt;
+        if (dataIndex === 'price') {
+          parser = parseFloat;
+        }
+        handleSave(record, dataIndex, parser(e.target.value));
       }
-      handleSave(record, dataIndex, parser(e.target.value));
     } catch (errInfo) {
       console.log('Save failed:', errInfo);
     }
@@ -27,15 +31,25 @@ const EditableCell = ({
   let childNode = children;
 
   if (editable) {
-    childNode = (
-      <InputNumber
-        disabled={disabled}
-        value={(record && record[dataIndex]) || 0}
-        precision={dataIndex === 'price' ? 2 : 0}
-        onBlur={save}
-        onPressEnter={save}
-      />
-    );
+    if (dataIndex === 'archived') {
+      childNode = (
+        <Checkbox
+          disabled={disabled}
+          checked={(record && record[dataIndex]) || false}
+          onChange={save}
+        />
+      );
+    } else {
+      childNode = (
+        <InputNumber
+          disabled={disabled}
+          value={(record && record[dataIndex]) || 0}
+          precision={dataIndex === 'price' ? 2 : 0}
+          onBlur={save}
+          onPressEnter={save}
+        />
+      );
+    }
   }
 
   return <td {...restProps}>{childNode}</td>;
@@ -62,6 +76,11 @@ class EditableTable extends React.Component {
       {
         title: '价格',
         dataIndex: 'price',
+        editable: true,
+      },
+      {
+        title: '禁用',
+        dataIndex: 'archived',
         editable: true,
       },
     ];
