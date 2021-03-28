@@ -1,3 +1,5 @@
+import configs from './env';
+
 export default {
   navTheme: 'dark',
   // 拂晓蓝
@@ -14,5 +16,5 @@ export default {
   title: 'Ant Design Pro',
   pwa: false,
   iconfontUrl: '',
-  baseUrl: 'http://39.107.102.219:7171',
+  baseUrl: configs[process.env.NODE_ENV].API_SERVER,
 };
