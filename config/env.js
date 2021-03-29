@@ -1,7 +1,7 @@
 export default {
   // 生产环境
   production: {
-    API_SERVER: 'http://39.107.102.219:7171',
+    API_SERVER: 'https://iwzwz.com:7171',
   },
 
   // 开发环境
