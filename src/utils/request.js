@@ -78,10 +78,10 @@ request.use(async (ctx, next) => {
   await next();
   const { res } = ctx;
   if (res && !res.success && res.error) {
-    // eslint-disable-next-line no-throw-literal
-    throw new Error({
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
+    throw {
       response: res,
-    });
+    };
   }
   return res;
 });

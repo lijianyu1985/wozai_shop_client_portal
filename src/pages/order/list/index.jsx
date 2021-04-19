@@ -1,10 +1,14 @@
 /* eslint-disable no-underscore-dangle */
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import React, { Component } from 'react';
-import { Table, Card } from 'antd';
+import { Table, Card, Form, Input, Select, Button } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import styles from './index.less';
+import { buildAddress, clearEmptyFields } from '../../../utils/utils';
+import { orderStatus } from '../../../utils/const';
+
+const projection = '_id orderNumber status address rate';
 
 class OrderList extends Component {
   state = {
@@ -23,7 +27,73 @@ class OrderList extends Component {
       key: 'orderNumber',
       render: text => text,
     },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      key: 'status',
+      render: status => status && status.current && status.current.name,
+    },
+    {
+      title: '目标地址',
+      dataIndex: 'address',
+      key: 'address',
+      render: address => buildAddress(address) || '--',
+    },
+    {
+      title: '目标电话',
+      dataIndex: 'address',
+      key: 'address_phone',
+      render: address => (address && address.phone) || '--',
+    },
+    {
+      title: '目标姓名',
+      dataIndex: 'address',
+      key: 'address_name',
+      render: address => (address && address.name) || '--',
+    },
+    {
+      title: '备注',
+      dataIndex: 'description',
+      key: 'description',
+      render: description => description,
+    },
+    {
+      title: '运费',
+      dataIndex: 'rate',
+      key: 'rate_shippingFee',
+      render: rate => rate.shippingFee,
+    },
+    {
+      title: '总金额',
+      dataIndex: 'rate',
+      key: 'rate_total',
+      render: rate => rate.total,
+    },
+    {
+      title: '操作',
+      key: 'action',
+      render: (text, record) => (
+        <span>
+          <a
+            key="viewOrder"
+            onClick={e => {
+              e.preventDefault();
+              e.stopPropagation();
+              this.viewItem(e, record);
+            }}
+          >
+            查看
+          </a>
+          {/* <Divider type="vertical" />
+          <Popconfirm title="是否要删除此行？" onConfirm={() => { }}>
+            <a>取消订单</a>
+          </Popconfirm> */}
+        </span>
+      ),
+    },
   ];
+
+  formRef = React.createRef();
 
   componentDidMount() {
     const { dispatch } = this.props;
@@ -34,7 +104,7 @@ class OrderList extends Component {
         size: pagination.pageSize || 10,
         page: pagination.current || 1,
         modelName: 'Order',
-        selector: '_id orderNumber status',
+        selector: projection,
       },
     });
   }
@@ -63,22 +133,37 @@ class OrderList extends Component {
     });
   };
 
-  editItem = order => {
+  viewItem = (e, order) => {
     router.push({
-      pathname: 'edit',
+      pathname: 'view',
       query: {
         id: order._id,
       },
     });
   };
 
-  editItemDetails = order => {
-    router.push({
-      pathname: 'editSku',
-      query: {
-        id: order._id,
+  handleSearch = query => {
+    // eslint-disable-next-line no-unused-expressions
+    const { dispatch } = this.props;
+    const { pagination } = this.state;
+    pagination.current = 1;
+    this.setState(
+      {
+        pagination,
       },
-    });
+      () => {
+        dispatch({
+          type: 'order/page',
+          payload: {
+            size: pagination.pageSize || 10,
+            page: pagination.current || 1,
+            modelName: 'Order',
+            selector: projection,
+            query: clearEmptyFields(query),
+          },
+        });
+      },
+    );
   };
 
   handleTableChange = pagination => {
@@ -102,12 +187,60 @@ class OrderList extends Component {
             size: pagination.pageSize || 10,
             page: pagination.current || 1,
             modelName: 'Order',
-            selector: '_id orderNumber status',
+            selector: projection,
+            query: clearEmptyFields(this.formRef.current.getFieldsValue()),
           },
         });
       },
     );
   };
+
+  handleFormReset = () => {
+    this.formRef.current.resetFields();
+  };
+
+  renderSimpleForm() {
+    return (
+      <Form
+        ref={this.formRef}
+        onFinish={this.handleSearch}
+        layout="inline"
+        className={styles['search-form']}
+      >
+        <Form.Item name="orderNumber" label="订单编号">
+          <Input />
+        </Form.Item>
+        <Form.Item name="status.current.name" label="订单状态">
+          <Select placeholder="请选择订单状态">
+            {(orderStatus || []).map(item => (
+              <Select.Option key={item} value={item}>
+                {item}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+        <Form.Item name="address.name" label="客户名">
+          <Input />
+        </Form.Item>
+        <Form.Item name="address.phone" label="客户电话">
+          <Input />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            查询
+          </Button>
+          <Button
+            style={{
+              marginLeft: 8,
+            }}
+            onClick={this.handleFormReset}
+          >
+            重置
+          </Button>
+        </Form.Item>
+      </Form>
+    );
+  }
 
   render() {
     const {
@@ -119,6 +252,7 @@ class OrderList extends Component {
     return (
       <>
         <PageHeaderWrapper>
+          <Card bordered={false}>{this.renderSimpleForm()}</Card>
           <div className={styles.standardList}>
             <Card
               className={styles.listCard}
@@ -132,6 +266,13 @@ class OrderList extends Component {
               }}
             >
               <Table
+                onRow={record => {
+                  return {
+                    onClick: event => {
+                      this.viewItem(event, record);
+                    }, // click row
+                  };
+                }}
                 loading={loading}
                 columns={this.columns}
                 dataSource={list}

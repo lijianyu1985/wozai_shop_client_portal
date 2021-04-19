@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Input, Popconfirm, Form, Button, Divider } from 'antd';
 import EditableTagGroup from '../Tags';
 import './table.less';
@@ -56,6 +56,10 @@ const EditableTable = ({ value, onChange, disabled }) => {
   const [form] = Form.useForm();
   const [data, setData] = useState((value || []).map((v, key) => ({ ...v, key })));
   const [editingKey, setEditingKey] = useState('');
+
+  useEffect(() => {
+    setData((value || []).map((v, key) => ({ ...v, key })));
+  }, [value]);
 
   const isEditing = record => record.key === editingKey;
 
@@ -184,6 +188,7 @@ const EditableTable = ({ value, onChange, disabled }) => {
       }),
     };
   });
+
   return (
     <div>
       <Button

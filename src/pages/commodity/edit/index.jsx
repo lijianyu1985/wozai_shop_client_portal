@@ -14,6 +14,8 @@ import {
   Upload,
   Modal,
   Popconfirm,
+  Switch,
+  InputNumber,
 } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
@@ -44,6 +46,7 @@ class CommodityEdit extends Component {
     previewImage: '',
     fileList: [],
     coverList: [],
+    defaultSubdivide: false,
   };
 
   formRef = React.createRef();
@@ -72,7 +75,7 @@ class CommodityEdit extends Component {
           modelName: 'Commodity',
           id: this.props.location.query.id,
           selector:
-            '_id name code brand categoryId photos coverPhotos description subdivide status',
+            '_id name code brand weight categoryId photos coverPhotos description subdivide status defaultSubdivide',
         },
         callback: response => {
           const photos = (response && response.data && response.data.photos) || [];
@@ -89,7 +92,9 @@ class CommodityEdit extends Component {
             name: url.substring(52),
             url: buildPictureUrl(url),
           }));
-          this.setState({ fileList, coverList });
+          const { defaultSubdivide } = response.data;
+          console.log(defaultSubdivide);
+          this.setState({ fileList, coverList, defaultSubdivide });
         },
       });
     }
@@ -102,6 +107,7 @@ class CommodityEdit extends Component {
   }
 
   handleSubmit = values => {
+    console.log(values);
     const { dispatch } = this.props;
     const { editing, commodityId, fileList, coverList } = this.state;
     const photos = (fileList || []).map(
@@ -259,7 +265,14 @@ class CommodityEdit extends Component {
     } = this.props;
     const { commodityId } = this.state;
 
-    const { editing, previewVisible, previewImage, fileList, coverList } = this.state;
+    const {
+      editing,
+      previewVisible,
+      previewImage,
+      fileList,
+      coverList,
+      defaultSubdivide,
+    } = this.state;
     const isFormDisabled = !!(commodityStatusMap.preOnline !== current.status && commodityId);
     return (
       <PageHeaderWrapper content="" className={styles.main}>
@@ -338,6 +351,22 @@ class CommodityEdit extends Component {
                 ]}
               >
                 <Input disabled={isFormDisabled} />
+              </Form.Item>
+
+              <Form.Item label="重量" {...formItemLayout}>
+                <Form.Item name="weight" noStyle>
+                  <InputNumber
+                    style={{
+                      width: 150,
+                    }}
+                    min="0"
+                    step="0.01"
+                    stringMode
+                    precision={2}
+                    disabled={isFormDisabled}
+                  />
+                </Form.Item>
+                <span className="ant-form-text">千克(kg)</span>
               </Form.Item>
               <Form.Item
                 name="categoryId"
@@ -418,6 +447,41 @@ class CommodityEdit extends Component {
                 </Upload>
               </Form.Item>
               <Form.Item
+                name="defaultSubdivide"
+                label="是否禁用细分类"
+                valuePropName="checked"
+                {...formItemLayout}
+              >
+                <Switch
+                  onChange={val => {
+                    this.setState({ defaultSubdivide: val });
+                    if (val) {
+                      this.formRef.current.setFieldsValue({
+                        subdivide: [
+                          {
+                            kind: '默认',
+                            valueList: ['默认'],
+                          },
+                        ],
+                      });
+                    } else {
+                      this.formRef.current.setFieldsValue({
+                        subdivide:
+                          current.subdivide && current.subdivide.length
+                            ? current.subdivide
+                            : [
+                                {
+                                  kind: '类型',
+                                  valueList: [],
+                                },
+                              ],
+                      });
+                    }
+                  }}
+                  disabled={isFormDisabled}
+                />
+              </Form.Item>
+              <Form.Item
                 name="subdivide"
                 label="细分类"
                 {...formItemLayout}
@@ -443,7 +507,7 @@ class CommodityEdit extends Component {
                   },
                 ]}
               >
-                <SubdivideEditor disabled={isFormDisabled} />
+                <SubdivideEditor disabled={defaultSubdivide || isFormDisabled} />
               </Form.Item>
               <Form.Item
                 name="description"

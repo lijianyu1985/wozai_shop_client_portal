@@ -95,10 +95,13 @@ class EditorConvertToHTML extends Component {
       editorState,
     });
     // this.props.onChange(editorState.toHTML());
+    this.props.onChange(editorState.toHTML());
   };
 
   handleBraftBlur = editorState => {
-    this.props.onChange(editorState.toHTML());
+    console.log('handleBraftBlur');
+    console.log(editorState.toHTML());
+    // this.props.onChange(editorState.toHTML());
   };
 
   render() {

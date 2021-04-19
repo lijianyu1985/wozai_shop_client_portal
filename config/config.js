@@ -195,19 +195,24 @@ export default {
               authority: ['super_admin'],
               routes: [
                 {
+                  path: '/order',
+                  name: '订单列表',
+                  redirect: '/order/list',
+                  authority: ['super_admin'],
+                },
+                {
                   path: '/order/list',
                   name: '订单列表',
-                  icon: 'build',
+                  component: './order/list',
+                  hideInMenu: true,
                   authority: ['super_admin'],
-                  routes: [
-                    {
-                      path: '/order/list',
-                      name: '订单列表',
-                      component: './order/list',
-                      hideInMenu: true,
-                      authority: ['super_admin'],
-                    },
-                  ],
+                },
+                {
+                  path: '/order/view',
+                  name: '订单列表',
+                  component: './order/view',
+                  hideInMenu: true,
+                  authority: ['super_admin'],
                 },
               ],
             },

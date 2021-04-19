@@ -83,3 +83,67 @@ export const getBase64 = file =>
     reader.onload = () => resolve(reader.result);
     reader.onerror = error => reject(error);
   });
+
+export const buildAddress = address => {
+  if (!address) {
+    return '';
+  }
+  return `${address.province}, ${address.city}, ${address.county}, ${address.address}`;
+};
+
+export const toDisplayTimestamp = timestamp => {
+  if (!timestamp) {
+    return '';
+  }
+  const timestapDate = new Date(timestamp);
+  if (Number.isNaN(timestapDate.getTime())) {
+    return '';
+  }
+  return `${timestapDate.getFullYear()}-${timestapDate.getMonth() +
+    1}-${timestapDate.getDate()} ${timestapDate.getHours()}:${timestapDate.getMinutes()}:${timestapDate.getSeconds()}`;
+};
+
+export const toDisplayDate = timestamp => {
+  if (!timestamp) {
+    return '';
+  }
+  const timestapDate = new Date(timestamp);
+  if (Number.isNaN(timestapDate.getTime())) {
+    return '';
+  }
+  return `${timestapDate.getFullYear()}-${timestapDate.getMonth() + 1}-${timestapDate.getDate()}`;
+};
+
+export const clearEmptyFields = val => {
+  const result = {};
+  lodash.forIn(val, function(value, key) {
+    if (value) {
+      result[key] = value;
+    }
+  });
+  return result;
+};
+
+export const jsonConvertToFlatten = val => {
+  const result = {};
+  const reStructure = (arr, v, target) => {
+    if (arr.length === 0) {
+      return;
+    }
+    if (arr.length === 1) {
+      // eslint-disable-next-line no-param-reassign
+      target[arr[0]] = v;
+      return;
+    }
+    if (!target[arr[0]]) {
+      // eslint-disable-next-line no-param-reassign
+      target[arr[0]] = {};
+    }
+    reStructure(arr.slice(1), v, target[arr[0]]);
+  };
+  lodash.forIn(val, function(value, key) {
+    const keys = key.split('.');
+    reStructure(keys, value, result);
+  });
+  return result;
+};

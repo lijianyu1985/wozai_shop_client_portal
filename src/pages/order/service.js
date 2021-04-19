@@ -42,8 +42,15 @@ export async function withdraw(params) {
   });
 }
 
-export async function discard(params) {
-  return request('/Order/Discard', {
+export async function cancel(params) {
+  return request('/Order/Cancel', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function createShipping(params) {
+  return request('/Order/CreateShipping', {
     method: 'POST',
     data: params,
   });
