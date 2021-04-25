@@ -71,7 +71,8 @@ export const buildPictureUrl = url => {
 export const trimBaseUrl = url => {
   let pictureUrl = decodeURI(url);
   if (lodash.startsWith(pictureUrl, 'http://') || lodash.startsWith(pictureUrl, 'https://')) {
-    pictureUrl = lodash.trimStart(pictureUrl, `${lodash.trimEnd(config.baseUrl, '/')}/}`);
+    // eslint-disable-next-line no-restricted-globals
+    pictureUrl = lodash.trimStart(pictureUrl, location.origin);
   }
   return pictureUrl;
 };
