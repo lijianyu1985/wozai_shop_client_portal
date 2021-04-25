@@ -55,3 +55,10 @@ export async function createShipping(params) {
     data: params,
   });
 }
+
+export async function applyDiscount(params) {
+  return request('/Order/ApplyDiscount', {
+    method: 'POST',
+    data: params,
+  });
+}

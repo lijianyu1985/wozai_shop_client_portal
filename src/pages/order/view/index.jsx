@@ -15,6 +15,7 @@ import {
   Input,
   Row,
   Col,
+  InputNumber,
 } from 'antd';
 import { connect } from 'dva';
 import { Link } from 'umi';
@@ -36,14 +37,18 @@ const toSubdivideString = sku => {
 const cancelableStatus = [orderStatusMap.Created, orderStatusMap.Paid];
 const shippingableStatus = [orderStatusMap.Paid];
 const refundableStatus = [orderStatusMap.Canceled, orderStatusMap.Returned];
+const discountableStatus = [orderStatusMap.Canceled, orderStatusMap.Created];
 
 class OrderView extends Component {
   state = {
     merchantAddress: {},
     isExpressModalVisible: false,
+    isDiscountModalVisible: false,
   };
 
   formRef = React.createRef();
+
+  discountFormRef = React.createRef();
 
   refreshCurrent = id => {
     const { dispatch } = this.props;
@@ -156,6 +161,33 @@ class OrderView extends Component {
     });
   };
 
+  applyDiscount = ({ discount }) => {
+    const {
+      order: { current },
+    } = this.props;
+    // eslint-disable-next-line no-console
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'order/applyDiscount',
+      payload: {
+        id: current._id,
+        discount,
+      },
+      callback: () => {
+        this.refreshCurrent(current._id);
+      },
+    });
+  };
+
+  handleDiscountModalOk = () => {
+    this.applyDiscount(this.discountFormRef.current.getFieldsValue());
+    this.setState({ isDiscountModalVisible: false });
+  };
+
+  handleDiscountModalCancel = () => {
+    this.setState({ isDiscountModalVisible: false });
+  };
+
   render() {
     const formItemLayout = {
       labelCol: {
@@ -181,7 +213,7 @@ class OrderView extends Component {
     const {
       order: { current },
     } = this.props;
-    const { isExpressModalVisible } = this.state;
+    const { isExpressModalVisible, isDiscountModalVisible } = this.state;
     let count = 0;
     let weight = 0;
     if (current && current.commodityItems && current.commodityItems.length) {
@@ -327,13 +359,25 @@ class OrderView extends Component {
               }}
               bordered={false}
               extra={
-                refundableStatus.indexOf(
-                  current.status && current.status.current && current.status.current.name,
-                ) >= 0 && (
-                  <>
-                    <Button type="link">退款</Button>
-                  </>
-                )
+                <>
+                  {refundableStatus.indexOf(
+                    current.status && current.status.current && current.status.current.name,
+                  ) >= 0 && <Button type="link">退款</Button>}
+                  {discountableStatus.indexOf(
+                    current.status && current.status.current && current.status.current.name,
+                  ) >= 0 && (
+                    <Button
+                      type="link"
+                      onClick={() =>
+                        this.setState({
+                          isDiscountModalVisible: true,
+                        })
+                      }
+                    >
+                      输入优惠金额
+                    </Button>
+                  )}
+                </>
               }
             >
               {current.rate && (
@@ -421,6 +465,31 @@ class OrderView extends Component {
                     <Input />
                   </Form.Item>
                 </Card>
+              </Col>
+            </Row>
+          </Form>
+        </Modal>
+
+        <Modal
+          title="给与优惠"
+          visible={isDiscountModalVisible}
+          onOk={this.handleDiscountModalOk}
+          onCancel={this.handleDiscountModalCancel}
+        >
+          <Form ref={this.discountFormRef}>
+            <Row>
+              <Col span={24}>
+                <Form.Item name="discount" label="优惠" {...formItemLayout}>
+                  <InputNumber
+                    style={{
+                      width: 150,
+                    }}
+                    min="0"
+                    step="0.01"
+                    stringMode
+                    precision={2}
+                  />
+                </Form.Item>
               </Col>
             </Row>
           </Form>

@@ -1,5 +1,5 @@
 import modelFactory from '../../utils/modelFactory';
-import { cancel, createShipping } from './service';
+import { cancel, createShipping, applyDiscount } from './service';
 import { getMerchantAddress } from '../../services/system';
 
 const Model = modelFactory({
@@ -28,6 +28,15 @@ const Model = modelFactory({
     },
     *createShipping({ payload, callback }, { call }) {
       const response = yield call(createShipping, payload);
+      if (response && response.success) {
+        // eslint-disable-next-line no-unused-expressions
+        if (callback) {
+          callback(response);
+        }
+      }
+    },
+    *applyDiscount({ payload, callback }, { call }) {
+      const response = yield call(applyDiscount, payload);
       if (response && response.success) {
         // eslint-disable-next-line no-unused-expressions
         if (callback) {
